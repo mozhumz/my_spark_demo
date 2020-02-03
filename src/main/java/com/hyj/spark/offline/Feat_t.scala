@@ -23,7 +23,7 @@ object Feat_t {
 //  1. 销售量 prod_cnt
     val prodCnt = priors.groupBy("product_id").count().withColumnRenamed("count","prod_cnt")
 //      .selectExpr("product_id","count as prod_cnt")
-
+        prodCnt.show()
 //  用sql groupby
 //    val prodCnt = spark.sql("select product_id,count(1) as prod_cnt from badou.priors group by product_id")
 
@@ -68,19 +68,19 @@ object Feat_t {
 //    up.groupBy("user_id").agg(collect_set("product_id").as("prod_uni_cnt"))
 
 
-    val userProRcdSize = up.rdd.map(x=>(x(0).toString,x(1).toString))
-      .groupByKey()
-      .mapValues{records=>
-        val rs = records.toSet;
-        (rs.size,rs.mkString(","),records.size)
-      }
-      .toDF("user_id","tuple")
-      .selectExpr("user_id","tuple._1 as prod_uni_size",
-      "tuple._2 as prod_records",
-      "tuple._3 as prod_size")
+//    val userProRcdSize = up.rdd.map(x=>(x(0).toString,x(1).toString))
+//      .groupByKey()
+//      .mapValues{records=>
+//        val rs = records.toSet;
+//        (rs.size,rs.mkString(","),records.size)
+//      }
+//      .toDF("user_id","tuple")
+//      .selectExpr("user_id","tuple._1 as prod_uni_size",
+//      "tuple._2 as prod_records",
+//      "tuple._3 as prod_size")
 
 //    用function中的方法统计
-    val userProRcdSize1 = up.groupBy("user_id")
+    val userProRcdSize = up.groupBy("user_id")
       .agg(collect_set("product_id").as("prod_records"),
         size(collect_set("product_id")).as("prod_uni_size"),
         //countDistinct("product_id").as("prod_uni_size"),
@@ -115,6 +115,7 @@ object Feat_t {
     val userXprodNbOrd = userXprod.groupBy("user_prod")
       .agg(count("user_prod").as("orders_cnt"),
         avg("add_to_cart_order").as("avg_pos_in_cart"))
+    userXprodNbOrd.show()
 
     //    3. 共同的最后一个订单的id,order_number,以及对应的hour
     val lastOrder = userXprod.rdd.map(x=>(x(0).toString,(x(1).toString,x(2).toString,x(3).toString)))
@@ -124,10 +125,12 @@ object Feat_t {
       .selectExpr("user_prod","cast(order_num_id._1 as int) as max_ord_num",
         "order_num_id._2 as last_order_id",
         "order_num_id._3 as last_order_hour")
+    lastOrder.show()
 
     val xFeat = userXprodNbOrd.join(lastOrder,"user_prod")
       .selectExpr("*","split(user_prod,'_')[0] as user_id",
         "split(user_prod,'_')[1] as product_id").drop("user_prod")
+    xFeat.show()
   }
 
 }

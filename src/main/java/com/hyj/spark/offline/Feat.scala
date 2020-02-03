@@ -9,7 +9,7 @@ object Feat {
     val conf = Set("spark.sql.broadcastTimeout", "3000000ms")
 
     val spark = SparkSession.builder().appName("Hyj-spark").enableHiveSupport().getOrCreate()
-    spark.sqlContext.setConf("spark.sql.broadcastTimeout","3000000ms")
+    spark.sqlContext.setConf("spark.sql.broadcastTimeout", "3000000ms")
 
     val orders = spark.sql("select * from badou.orders")
 
@@ -64,7 +64,7 @@ object Feat {
     op.show()
 
     val up = op.selectExpr("user_id", "product_id")
-//    val a=orders.persist(StorageLevel.MEMORY_AND_DISK_SER)
+    //    val a=orders.persist(StorageLevel.MEMORY_AND_DISK_SER)
 
     /**
       * 3. 每个用户购买的product商品去重后的集合数据  collect_set
@@ -83,7 +83,7 @@ object Feat {
     val userProdCnt2_2 = up.rdd.map(x => (x(0).toString, x(1).toString)).groupByKey().mapValues {
       records =>
         val rs = records.toSet
-        (rs.size, records.size,rs.mkString(" "))
+        (rs.size, records.size, rs.mkString(" "))
     }
     //打印该rdd前10条数据  rdd.collect().foreach {println}
     userProdCnt2_2.take(10).foreach(println)
