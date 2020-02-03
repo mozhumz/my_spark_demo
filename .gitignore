@@ -1,7 +1,3 @@
-/build/
 .classpath
-/.idea/
+.idea
 .project
-/.settings/
-/bin/
-/out/
