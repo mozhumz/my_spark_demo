@@ -20,20 +20,25 @@ object jieBa {
       .enableHiveSupport()
       .getOrCreate()
 //    spark shell [client] 实例化sc,spark
-    val df = spark.sql("select * from badou.news_noseg")
+    val df = spark.sql("select * from badou.news_seg")
 
 
 //    结巴对sentence进行分词
     val segmenter = new JiebaSegmenter()
-//    将对应结巴类创建broadcast
+//    将对应结巴类创建broadcast 分发变量segmenter到各节点
     val broadcastSeg = spark.sparkContext.broadcast(segmenter)
 
     val jiebaUdf = udf{(sentence:String)=>
       val exeSegmenter = broadcastSeg.value
+      //切分 得到每个单词的索引
       exeSegmenter.process(sentence.toString,SegMode.INDEX)
-        .toArray().map(_.asInstanceOf[SegToken].word)
+        .toArray()
+        //根据索引得到单词
+        .map(_.asInstanceOf[SegToken].word)
+        //获取单词长度大于1的
+        .filter(_.length>1)
         //返回值为String
-        .filter(_.length>1).mkString("/")
+        .mkString("/")
     }
 
 
