@@ -6,6 +6,7 @@ import org.apache.spark.storage.StorageLevel
 
 object Feat {
   def main(args: Array[String]): Unit = {
+    val s="\\\"\""
     val conf = Set("spark.sql.broadcastTimeout", "3000000ms")
 
     val spark = SparkSession.builder().appName("Hyj-spark").enableHiveSupport().getOrCreate()

@@ -111,7 +111,7 @@ object Feat_t {
 //      4. 用户总商品数量以及去重后的商品数量
         size(collect_set("product_id")).as("prod_uni_size"),
         //countDistinct("product_id").as("prod_uni_size"),
-        count("product_id").as("prod_size"))
+        count("product_id").cast("float").as("prod_total_size"))
     userProRcdSize.write.mode("overwrite").saveAsTable("badou.user_pro_records")
     userProRcdSize.show()
 
@@ -141,7 +141,10 @@ object Feat_t {
     //    2. 特定product具体在购物车中出现位置的平均位置
     val userXprodNbOrd = userXprod.groupBy("user_prod")
       .agg(countDistinct("order_id").as("orders_cnt"),
-        avg("add_to_cart_order").as("avg_pos_in_cart"))
+        avg("add_to_cart_order").as("avg_pos_in_cart"),
+      //用户每个商品购买的数量
+        count("user_prod").cast("float").as("prod_size")
+      )
     userXprodNbOrd.show()
 
     //    3. 共同的最后一个订单的id,order_number,以及对应的hour
@@ -164,6 +167,14 @@ object Feat_t {
         "split(user_prod,'_')[1] as product_id").drop("user_prod")
     xFeat.show()
 
+    //4. 用户对应product在所有这个用户购买产品量中的占比rate
+    //userXprodNbOrd prod_size
+    // userProRcdSize prod_total_size
+    val userProdRate=userXprodNbOrd.selectExpr("*","split(user_prod,'_')[0] as user_id","split(user_prod,'_')[1] as product_id")
+      .drop("user_prod").join(userProRcdSize,"user_id")
+      .selectExpr("user_id","product_id","prod_size","prod_total_size","prod_size/prod_total_size as prod_rate")
+
+    userProdRate.show()
   }
 
 }
