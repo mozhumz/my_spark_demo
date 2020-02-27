@@ -1,5 +1,4 @@
-package com.hyj.spark.offline
-
+package com.hyj.sparksql.offline
 
 import org.apache.spark.sql.functions._
 import org.apache.spark.sql.SparkSession

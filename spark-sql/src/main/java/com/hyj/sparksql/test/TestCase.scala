@@ -1,4 +1,4 @@
-package com.hyj.spark.test
+package com.hyj.sparksql.test
 
 object TestCase {
   def main(args: Array[String]): Unit = {

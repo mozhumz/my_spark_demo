@@ -1,4 +1,4 @@
-package com.hyj.spark.util
+package com.hyj.sparksql.util
 
 import com.huaban.analysis.jieba.JiebaSegmenter.SegMode
 import com.huaban.analysis.jieba.{JiebaSegmenter, SegToken}
