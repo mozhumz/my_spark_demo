@@ -17,7 +17,7 @@
         <MaxPermGen>512m</MaxPermGen>
         <spark.version>2.1.0</spark.version>
         <scala.version>2.11</scala.version>
-        <hadoop.version>2.6.5</hadoop.version>
+        <hadoop.version>2.10.1</hadoop.version>
         <hbase.version>1.3.1</hbase.version>
     </properties>
 
